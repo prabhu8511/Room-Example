@@ -8,8 +8,9 @@ import com.jetpack.roomdemo.R
 import com.jetpack.roomdemo.databinding.ListItemBinding
 import com.jetpack.roomdemo.db.Subscriber
 
-class RecyclerViewAdapter(private val subscribers: List<Subscriber>) :
-    RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+class RecyclerViewAdapter( private val itemClick: (Subscriber) -> Unit) : RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
+
+    private val subscribers = ArrayList<Subscriber>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -19,18 +20,26 @@ class RecyclerViewAdapter(private val subscribers: List<Subscriber>) :
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(subscribers[position])
+        holder.bind(subscribers[position], itemClick)
     }
 
     override fun getItemCount(): Int {
         return subscribers.size
     }
 
+    fun setList(subscribers:List<Subscriber>){
+        this.subscribers.clear()
+        this.subscribers.addAll(subscribers)
+    }
 
-    class MyViewHolder(val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(subscriber: Subscriber) {
+
+    class MyViewHolder(private val binding: ListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(subscriber: Subscriber, itemClick: (Subscriber) -> Unit) {
             binding.nameText.text = subscriber.name
             binding.emailText.text = subscriber.email
+            binding.listItemLayout.setOnClickListener {
+                itemClick(subscriber)
+            }
         }
     }
 
